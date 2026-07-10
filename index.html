@@ -18,7 +18,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--text-main);height:100vh;display:flex;overflow:hidden}
 h1,h2,h3{font-family:'Outfit',sans-serif;font-weight:600}
-#side-panel{width:380px;background:var(--bg-secondary);border-right:1px solid var(--border-glow);backdrop-filter:blur(12px);z-index:1000;display:flex;flex-direction:column;box-shadow:10px 0 30px rgba(0,0,0,.5);overflow-y:auto}
+#side-panel{width:340px;flex-shrink:0;background:var(--bg-secondary);border-right:1px solid var(--border-glow);backdrop-filter:blur(12px);z-index:1000;display:flex;flex-direction:column;box-shadow:10px 0 30px rgba(0,0,0,.5);overflow-y:auto;transition:transform .25s ease}
 .panel-header{padding:24px;border-bottom:1px solid rgba(255,255,255,.08)}
 .panel-header h1{font-size:24px;color:#fff;text-shadow:0 0 10px rgba(0,242,254,.2);margin-bottom:4px}
 .panel-header p{font-size:13px;color:var(--text-muted)}
@@ -47,9 +47,38 @@ h1,h2,h3{font-family:'Outfit',sans-serif;font-weight:600}
 .pm-tags{margin:4px 0}.pm-tags .chip{font-size:10px;border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:1px 6px;margin-right:4px;text-transform:capitalize}
 .pm-coords{font-family:monospace;font-size:11px;color:var(--text-muted);margin-top:4px}
 .leaflet-container{font-family:'Inter',sans-serif}
+/* toggle button (hidden on desktop) */
+#panel-toggle{display:none;position:fixed;top:12px;left:12px;z-index:2000;width:44px;height:44px;border:1px solid var(--border-glow);border-radius:8px;background:var(--bg-secondary);backdrop-filter:blur(12px);color:var(--blue);font-size:22px;cursor:pointer;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+#panel-toggle:hover{background:rgba(0,242,254,.15)}
+#overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
+#side-panel{z-index:1000}
+/* tablet: narrower panel */
+@media (max-width:768px){
+  #side-panel{width:280px}
+  .panel-header{padding:18px 16px}
+  .panel-header h1{font-size:20px}
+  #filters{padding:16px}
+  .search{font-size:16px;padding:10px 12px}
+  .chk{font-size:12px}
+  .legend li{padding:6px 10px}
+  .legend b{font-size:13px}
+}
+/* desktop: hide toggle and overlay */
+@media (min-width:481px){
+  #overlay-bg{display:none !important}
+}
+/* mobile: panel becomes slide-in overlay, map takes full width */
+@media (max-width:480px){
+  #panel-toggle{display:flex}
+  #side-panel{position:fixed;top:0;left:0;height:100vh;width:85vw;max-width:320px;transform:translateX(-100%);z-index:1001}
+  #side-panel.open{transform:translateX(0)}
+  #map{width:100vw}
+  #side-panel.open ~ #overlay-bg{display:block;z-index:1000}
+}
 </style>
 </head>
 <body>
+<button id="panel-toggle" onclick="var sp=document.getElementById('side-panel');sp.classList.toggle('open');">&#9776;</button>
 <div id="side-panel">
   <div class="panel-header"><h1>Circle Sea</h1><p>Mappa Interattiva di Our Golden Age</p></div>
   <div id="filters">
@@ -60,6 +89,7 @@ h1,h2,h3{font-family:'Outfit',sans-serif;font-weight:600}
     <ul id="legend" class="legend"></ul>
   </div>
 </div>
+<div id="overlay-bg" onclick="document.getElementById('side-panel').classList.remove('open')"></div>
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
