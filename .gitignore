@@ -1,0 +1,18 @@
+# Ignore everything by default
+*
+
+# Allow only map-related deliverables
+!index.html
+!map.png
+!places.json
+!build_map.py
+!conftest.py
+!tests/
+!tests/**
+!.gitignore
+!README.md
+
+# Still ignore Python caches even inside allowed dirs
+__pycache__/
+*.pyc
+.pytest_cache/
